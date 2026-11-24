@@ -141,7 +141,7 @@ export default function ContactSection() {
       </div>
 
       {/* ------------------------------ Hero ------------------------------ */}
-      <section className="px-4 pb-12 pt-28 text-center sm:pt-36 md:pb-20 md:pt-44">
+      <section className="px-4 pb-12 pt-44 text-center sm:pt-48 md:pb-20 md:pt-56">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
