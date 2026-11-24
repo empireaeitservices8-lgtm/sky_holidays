@@ -102,29 +102,29 @@ export default function LoginRegisterPage() {
 
   return (
     <main
-      className={`${poppins.className} relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[#2f4a3b] px-4 pb-8 pt-28 sm:px-8 sm:pt-32`}
+      className={`${poppins.className} relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[#2f4a3b] px-3 pb-8 pt-24 sm:px-6 sm:pt-28 md:px-8 md:pt-32`}
       style={{ ["--brand" as string]: BRAND_COLOR }}
     >
       {/* Blurred full-page background */}
       <Image src={AUTH_IMAGE_URL} alt="" fill priority sizes="100vw" className="-z-20 scale-110 object-cover blur-md" />
       <div className="absolute inset-0 -z-10 bg-black/15" />
 
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-[2.5rem] bg-white p-2 shadow-2xl md:grid-cols-[1fr_1.35fr] md:p-3">
+      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl bg-white p-2 shadow-2xl sm:rounded-3xl md:grid-cols-[1fr_1.35fr] md:rounded-[2.5rem] md:p-3">
         {/* ---------- Form side ---------- */}
-        <section className="flex flex-col items-center justify-center px-6 py-10 sm:px-12 md:py-14">
+        <section className="flex flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-10 md:px-12 md:py-14">
           <p className="text-xl font-semibold tracking-tight" style={{ color: BRAND_COLOR }}>{BRAND_NAME}</p>
-          <h1 className="mt-5 text-center text-3xl font-bold leading-tight text-black sm:text-4xl">
+          <h1 className="mt-4 text-center text-2xl font-bold leading-tight text-black sm:mt-5 sm:text-4xl">
             {isRegister ? <>Start your<br />perfect trip</> : <>Welcome back,<br />traveler</>}
           </h1>
 
-          <div className="mt-9 flex items-center gap-1 rounded-full bg-[#f4f4f4] p-2.5">
+          <div className="mt-7 flex items-center gap-1 rounded-full bg-[#f4f4f4] p-1.5 sm:mt-9 sm:p-2.5">
             {([
               ["apple", "Continue with Apple", <AppleIcon key="a" />],
               ["google", "Continue with Google", <GoogleIcon key="g" />],
               ["facebook", "Continue with Facebook", <FacebookIcon key="f" />],
             ] as const).map(([p, label, icon]) => (
               <button key={p} type="button" aria-label={label} onClick={() => handleSocial(p)}
-                className="grid h-11 w-14 place-items-center rounded-full transition hover:bg-white hover:shadow">
+                className="grid h-10 w-12 place-items-center rounded-full transition hover:bg-white hover:shadow sm:h-11 sm:w-14">
                 {icon}
               </button>
             ))}

@@ -36,26 +36,26 @@ const POLICY_LINKS = [
 export default function Footer() {
   return (
     <footer className="border-t border-[#083858]/15 bg-white text-[#083858]">
-      <div className="mx-auto grid max-w-[1180px] gap-12 px-4 py-16 md:grid-cols-12 md:px-8">
+      <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 sm:py-14 md:grid-cols-12 md:gap-8 md:px-8 md:py-16 lg:gap-12">
         {/* Brand */}
-        <div className="md:col-span-5">
-          <p className="font-serif text-3xl">{BRAND}</p>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#083858]/75">
+        <div className="col-span-1 sm:col-span-2 md:col-span-5">
+          <p className="font-serif text-2xl sm:text-3xl">{BRAND}</p>
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#083858]/75 sm:mt-4">
             {TAGLINE}
           </p>
         </div>
 
         {/* Quick links */}
-        <nav aria-label="Quick links" className="md:col-span-2">
+        <nav aria-label="Quick links" className="col-span-1 sm:col-span-1 md:col-span-3">
           <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-[#083858]/55">
             Explore
           </h3>
-          <ul className="mt-5 space-y-3 text-sm">
+          <ul className="mt-4 space-y-2.5 text-sm sm:mt-5 sm:space-y-3">
             {QUICK_LINKS.map((l) => (
               <li key={l.label}>
                 <Link
                   href={l.href}
-                  className="text-[#083858]/85 transition-colors hover:text-[#083858] hover:underline"
+                  className="inline-block py-0.5 text-[#083858]/85 transition-colors hover:text-[#083858] hover:underline"
                 >
                   {l.label}
                 </Link>
@@ -65,16 +65,16 @@ export default function Footer() {
         </nav>
 
         {/* Contact */}
-        <div className="md:col-span-5 lg:col-span-5">
+        <div className="col-span-1 sm:col-span-1 md:col-span-4">
           <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-[#083858]/55">
             Contact
           </h3>
-          <ul className="mt-5 space-y-4 text-sm text-[#083858]/85">
+          <ul className="mt-4 space-y-3.5 text-sm text-[#083858]/85 sm:mt-5 sm:space-y-4">
             <li className="flex items-start gap-3">
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#083858]/60" />
               <a
                 href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}
-                className="transition-colors hover:text-[#083858] hover:underline"
+                className="break-all transition-colors hover:text-[#083858] hover:underline sm:break-normal"
               >
                 {CONTACT.phone}
               </a>
@@ -83,14 +83,14 @@ export default function Footer() {
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#083858]/60" />
               <a
                 href={`mailto:${CONTACT.email}`}
-                className="transition-colors hover:text-[#083858] hover:underline"
+                className="break-all transition-colors hover:text-[#083858] hover:underline sm:break-normal"
               >
                 {CONTACT.email}
               </a>
             </li>
             <li className="flex items-start gap-3">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#083858]/60" />
-              <span>{CONTACT.address}</span>
+              <span className="break-words">{CONTACT.address}</span>
             </li>
           </ul>
         </div>
@@ -98,12 +98,12 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-[#083858]/15">
-        <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-4 py-6 text-xs text-[#083858]/70 md:flex-row md:items-center md:justify-between md:px-8">
+        <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-4 px-4 py-6 text-center text-xs text-[#083858]/70 sm:text-left md:flex-row md:px-8">
           <p>
             © {COPYRIGHT_YEAR} {BRAND}. All rights reserved.
           </p>
 
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:justify-start">
             {POLICY_LINKS.map((l) => (
               <li key={l.label}>
                 <Link

@@ -22,7 +22,18 @@ const CITY = "Kochi, Kerala";
 // If a photo fails to load, a soft colour block is shown instead, so nothing looks broken.
 const u = (id: string, w = 1200) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
-const HERO_IMAGE = u("photo-1493976040374-85c8e12f0c0e", 2400);
+/**
+ * HERO IMAGE
+ * The hero image URL is picked in this order:
+ *   1. the `heroImage` prop      <AboutPage heroImage="https://..." />
+ *   2. the env variable          NEXT_PUBLIC_ABOUT_HERO_URL (in .env.local or your hosting dashboard)
+ *   3. DEFAULT_HERO below        (used if nothing is set, or if the URL fails to load)
+ *
+ * Remember: the image's domain must be allowed in next.config.js under images.remotePatterns.
+ * Local images such as "/images/about-hero.jpg" (inside /public) work without any config.
+ */
+const DEFAULT_HERO = "/images/about2.png";
+
 const CTA_IMAGE = u("photo-1570077188670-e3a8d69ac5ff", 2400);
 
 // Light world map behind the polaroids (optional – leave "" to hide)
@@ -142,7 +153,11 @@ function Postcard({ p, index }: { p: (typeof POSTCARDS)[number]; index: number }
 /*  Page                                                                       */
 /* ========================================================================== */
 
-export default function AboutPage() {
+export default function AboutPage({ heroImage }: { heroImage?: string }) {
+  // Hero image: prop → env variable → default. Falls back to the default if the URL fails to load.
+  const [heroFailed, setHeroFailed] = useState(false);
+  const heroSrc = (!heroFailed && (heroImage || process.env.NEXT_PUBLIC_ABOUT_HERO_URL)) || DEFAULT_HERO;
+
   // Route (dotted line) between polaroid centres, in order
   const centres = PLACES.map((p) => ({ x: p.x + 8, y: p.y + 15 }));
   const segments = centres.slice(1).map((c, i) => ({ a: centres[i], b: c }));
@@ -150,20 +165,32 @@ export default function AboutPage() {
   return (
     <div className={body.className} style={{ background: CREAM }}>
       {/* ------------------------------ Hero ------------------------------ */}
-      <section className="relative isolate flex min-h-[78vh] items-center justify-center overflow-hidden px-4 pb-16 pt-40 text-center text-white">
-        <Image src={HERO_IMAGE} alt="" fill priority sizes="100vw" quality={75} className="-z-20 object-cover object-center" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-black/35 to-black/70" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.4),transparent_70%)]" />
+      <section className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden px-4 pb-14 pt-28 text-center text-white sm:min-h-[78vh] sm:pt-36 md:pt-40">
+        <Image
+          key={heroSrc}
+          src={heroSrc}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          quality={75}
+          onError={() => setHeroFailed(true)}
+          className="-z-20 object-cover object-center"
+        />
+        {/* Overlays: flat dim + top/bottom fade + extra dark pool behind the text */}
+        <div className="absolute inset-0 -z-10 bg-black/40" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-black/70" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.6),transparent_75%)]" />
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }} className="max-w-3xl">
-          <h1 className={`${heading.className} text-5xl font-medium leading-tight [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-7xl`}>
+          <h1 className={`${heading.className} text-3xl font-medium leading-tight [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-5xl md:text-6xl lg:text-7xl`}>
             We turn journeys into stories
           </h1>
-          <nav aria-label="Breadcrumb" className="mt-4 flex items-center justify-center gap-2 text-sm text-white/80">
-            <Link href="/" className="transition-colors hover:text-white">Home</Link>
+          <nav aria-label="Breadcrumb" className="mt-4 flex items-center justify-center gap-2 text-sm text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+            {/* <Link href="/" className="transition-colors hover:text-white">Home</Link>
             <span aria-hidden>/</span>
-            <span className="text-white">About Us</span>
+            <span className="text-white">About Us</span> */}
           </nav>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed [text-shadow:0_2px_14px_rgba(0,0,0,0.8)] sm:text-lg">
+          <p className="mx-auto mt-6 max-w-xl text-base font-medium leading-relaxed text-white [text-shadow:0_2px_16px_rgba(0,0,0,0.9)] sm:text-lg">
             {BRAND} helps travelers discover the world in a way that feels personal, effortless and unforgettable.
           </p>
         </motion.div>
@@ -234,7 +261,7 @@ export default function AboutPage() {
               Three promises we send with every trip.
             </p>
           </div>
-          <div className="mt-14 grid gap-10 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 sm:mt-14 sm:grid-cols-2 md:grid-cols-3">
             {POSTCARDS.map((p, i) => (
               <Postcard key={p.title} p={p} index={i} />
             ))}

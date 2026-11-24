@@ -129,13 +129,13 @@ function SearchPanel({ query, setQuery, onSearch }: { query: string; setQuery: (
           <CalIcon size={22} className="shrink-0" />
           <span className="w-full">
             <span className={label}>Dates</span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
               <input type="date" min={today} value={checkIn} aria-label="Check-in"
                 onChange={(e) => { setCheckIn(e.target.value); if (checkOut && e.target.value > checkOut) setCheckOut(""); }}
-                className="w-[7.5rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
+                className="w-full min-w-[6.5rem] max-w-[8rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
               <span className="text-white/60">–</span>
               <input type="date" min={checkIn || today} value={checkOut} aria-label="Check-out" onChange={(e) => setCheckOut(e.target.value)}
-                className="w-[7.5rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
+                className="w-full min-w-[6.5rem] max-w-[8rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
             </span>
           </span>
         </label>
@@ -248,8 +248,8 @@ export default function DestinationPage() {
       `}</style>
 
       {/* Hero content (scrolls up over the fixed background) */}
-      <div className="mx-auto flex min-h-[88vh] w-full max-w-7xl flex-col justify-center px-4 pb-10 pt-32 text-center sm:px-6">
-        <h1 className={`${heading.className} text-4xl font-medium leading-tight tracking-tight [animation:riseIn_0.9s_ease-out_both] [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-6xl lg:text-7xl`}>
+      <div className="mx-auto flex min-h-[85vh] w-full max-w-7xl flex-col justify-center px-4 pb-10 pt-28 text-center sm:px-6 sm:pt-36">
+        <h1 className={`${heading.className} text-3xl font-medium leading-tight tracking-tight [animation:riseIn_0.9s_ease-out_both] [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-5xl md:text-6xl lg:text-7xl`}>
           Where Will You Go Next?
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white [animation:riseIn_0.9s_0.15s_ease-out_both] [text-shadow:0_2px_14px_rgba(0,0,0,0.8)] sm:text-lg">

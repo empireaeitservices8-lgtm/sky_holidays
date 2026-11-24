@@ -11,7 +11,6 @@ import { motion } from "framer-motion";
 /* -------------------------------------------------------------------------- */
 
 const BLUE = "#083858"; // main blue
-const BLUE_DARK = "#052638"; // hover / pressed
 const BLUE_TINT = "#e8f0f6"; // soft background
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -304,23 +303,32 @@ export default function DestinationsSection() {
   };
 
   return (
-    <section id="destinations" className="relative z-10 bg-white px-4 py-20 md:px-8 md:py-28">
-      {/* Small fade-up animation for cards */}
-      <style>{`@keyframes destFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}`}</style>
+    <section
+      id="destinations"
+      className="relative z-10 overflow-x-hidden bg-white px-4 py-14 sm:px-6 sm:py-20 md:px-8 md:py-28"
+    >
+      {/* Small fade-up animation for cards (skipped for reduced-motion users) */}
+      <style>{`
+        @keyframes destFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+        @media (prefers-reduced-motion: reduce){.dest-card{animation:none !important}}
+      `}</style>
 
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto w-full max-w-[1180px]">
         {/* Heading */}
         <div>
           <p
-            className="mb-3 text-xs font-semibold uppercase tracking-[0.3em]"
+            className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] sm:mb-3 sm:text-xs sm:tracking-[0.3em]"
             style={{ color: BLUE }}
           >
             Our packages
           </p>
-          <h2 className="text-4xl font-light sm:text-5xl" style={{ color: BLUE }}>
+          <h2
+            className="text-3xl font-light leading-tight sm:text-4xl md:text-5xl"
+            style={{ color: BLUE }}
+          >
             Find your perfect holiday
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-500 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-500 sm:mt-4 sm:text-base">
             Handpicked packages across the world. Pick a part of the world and
             a travel style to see what suits you best.
           </p>
@@ -330,7 +338,7 @@ export default function DestinationsSection() {
         <div
           role="group"
           aria-label="Region"
-          className="-mx-4 mt-8 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+          className="-mx-4 mt-6 overflow-x-auto overscroll-x-contain px-4 sm:-mx-6 sm:mt-8 sm:px-6 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <div
             className="inline-flex rounded-full p-1"
@@ -344,7 +352,7 @@ export default function DestinationsSection() {
                   type="button"
                   aria-pressed={isOn}
                   onClick={() => chooseRegion(r.value)}
-                  className="relative shrink-0 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium"
+                  className="relative shrink-0 whitespace-nowrap rounded-full px-4 py-2.5 text-[13px] font-medium sm:px-5 sm:text-sm"
                 >
                   {isOn && (
                     <motion.span
@@ -370,7 +378,7 @@ export default function DestinationsSection() {
         <div
           role="group"
           aria-label="Travel style"
-          className="-mx-4 mt-8 flex gap-7 overflow-x-auto border-b border-neutral-200 px-4 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+          className="-mx-4 mt-6 flex gap-5 overflow-x-auto overscroll-x-contain border-b border-neutral-200 px-4 sm:-mx-6 sm:mt-8 sm:gap-7 sm:px-6 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {(["all", ...THEMES] as const).map((t) => {
             const isOn = theme === t;
@@ -380,7 +388,7 @@ export default function DestinationsSection() {
                 type="button"
                 aria-pressed={isOn}
                 onClick={() => chooseTheme(t)}
-                className="relative shrink-0 pb-3 text-sm font-medium transition-colors duration-300"
+                className="relative shrink-0 whitespace-nowrap pb-3 pt-1 text-[13px] font-medium transition-colors duration-300 sm:text-sm"
                 style={{ color: isOn ? BLUE : "#8a949c" }}
               >
                 {t === "all" ? "All styles" : t}
@@ -397,7 +405,7 @@ export default function DestinationsSection() {
           })}
         </div>
 
-        <p className="mt-6 text-sm text-neutral-500" aria-live="polite">
+        <p className="mt-5 text-sm text-neutral-500 sm:mt-6" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "journey" : "journeys"}
         </p>
 
@@ -405,12 +413,12 @@ export default function DestinationsSection() {
         {visible.length > 0 ? (
           <div
             key={`${region}-${theme}`}
-            className="mt-6 grid gap-6 md:grid-cols-2"
+            className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-2"
           >
             {visible.map((p, i) => (
               <article
                 key={p.id}
-                className="group relative h-[380px] overflow-hidden rounded-3xl sm:h-[430px]"
+                className="dest-card group relative isolate flex min-h-[400px] flex-col justify-between overflow-hidden rounded-2xl sm:min-h-[430px] sm:rounded-3xl"
                 style={{
                   background: p.fallback,
                   animation: "destFadeUp 600ms ease both",
@@ -425,30 +433,31 @@ export default function DestinationsSection() {
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
+                  className="absolute inset-0 -z-20 h-full w-full object-cover transition-transform duration-[900ms] ease-out [@media(hover:hover)]:group-hover:scale-110"
                 />
 
                 {/* Gradient: dark at the bottom, with a blue tint */}
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 -z-10"
                   style={{
                     background:
-                      "linear-gradient(180deg, rgba(5,38,56,0.15) 0%, rgba(5,38,56,0) 35%, rgba(5,38,56,0.88) 100%)",
+                      "linear-gradient(180deg, rgba(5,38,56,0.2) 0%, rgba(5,38,56,0) 30%, rgba(5,38,56,0.9) 100%)",
                   }}
                 />
 
                 {/* Tags */}
-                <div className="absolute left-5 right-5 top-5 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 p-4 sm:p-5">
                   <span
                     className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white"
                     style={{ background: BLUE }}
                   >
                     {regionLabel(p.region)}
                   </span>
-                  {p.themes.slice(0, 2).map((t) => (
+                  {p.themes.slice(0, 2).map((t, idx) => (
                     <span
                       key={t}
-                      className="rounded-full bg-white/20 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md"
+                      className={`rounded-full bg-white/20 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md ${idx === 1 ? "hidden min-[400px]:inline-block" : ""
+                        }`}
                     >
                       {t}
                     </span>
@@ -456,28 +465,33 @@ export default function DestinationsSection() {
                 </div>
 
                 {/* Text + button */}
-                <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
-                  <h3 className="text-3xl font-light sm:text-4xl">{p.name}</h3>
-                  <div className="mt-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
-                    <p className="text-sm text-white/85">
-                      {duration(p.nights)}
-                      <span className="mx-2 text-white/40">|</span>
-                      {p.places}
+                <div className="p-5 pt-10 text-white sm:p-8 sm:pt-12">
+                  <h3 className="text-2xl font-light leading-tight sm:text-4xl">
+                    {p.name}
+                  </h3>
+
+                  <div className="mt-2 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-6">
+                    <p className="text-[13px] leading-snug text-white/85 sm:text-sm">
+                      <span className="block sm:inline">{duration(p.nights)}</span>
+                      <span className="mx-2 hidden text-white/40 sm:inline">|</span>
+                      <span className="block text-white/75 sm:inline sm:text-white/85">
+                        {p.places}
+                      </span>
                     </p>
-                    <p className="text-sm text-white/85">
+                    <p className="text-[13px] text-white/85 sm:text-sm">
                       Starting from{" "}
-                      <span className="text-xl font-semibold text-white">
+                      <span className="whitespace-nowrap text-lg font-semibold text-white sm:text-xl">
                         {formatPrice(p.price)}
                       </span>
                     </p>
                   </div>
 
                   {/* "Book now" slides in on hover (always visible on touch devices) */}
-                  <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:mt-5 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-within:mt-5 group-focus-within:grid-rows-[1fr] group-focus-within:opacity-100 [@media(hover:none)]:mt-5 [@media(hover:none)]:grid-rows-[1fr] [@media(hover:none)]:opacity-100">
+                  <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-focus-within:mt-5 group-focus-within:grid-rows-[1fr] group-focus-within:opacity-100 [@media(hover:hover)]:group-hover:mt-5 [@media(hover:hover)]:group-hover:grid-rows-[1fr] [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:none)]:mt-4 [@media(hover:none)]:grid-rows-[1fr] [@media(hover:none)]:opacity-100">
                     <div className="overflow-hidden">
                       <Link
                         href={`/destinations/${p.id}`}
-                        className="block rounded-full bg-white py-3.5 text-center text-base font-semibold transition-colors hover:bg-[#e8f0f6]"
+                        className="block rounded-full bg-white py-3 text-center text-[15px] font-semibold transition-colors hover:bg-[#e8f0f6] active:bg-[#e8f0f6] sm:py-3.5 sm:text-base"
                         style={{ color: BLUE }}
                       >
                         Book now
@@ -490,16 +504,16 @@ export default function DestinationsSection() {
           </div>
         ) : (
           <div
-            className="mt-6 rounded-3xl px-6 py-16 text-center"
+            className="mt-5 rounded-2xl px-5 py-12 text-center sm:mt-6 sm:rounded-3xl sm:px-6 sm:py-16"
             style={{ background: BLUE_TINT }}
           >
-            <p className="text-xl font-light" style={{ color: BLUE }}>
+            <p className="text-lg font-light sm:text-xl" style={{ color: BLUE }}>
               No packages match these filters yet.
             </p>
             <button
               type="button"
               onClick={reset}
-              className="mt-6 rounded-full px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#052638]"
+              className="mt-6 rounded-full px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#052638] active:bg-[#052638]"
               style={{ background: BLUE }}
             >
               Reset filters
@@ -509,18 +523,12 @@ export default function DestinationsSection() {
 
         {/* View more */}
         {filtered.length > visibleCount && (
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center sm:mt-12">
             <button
               type="button"
               onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-              className="rounded-full border-2 px-10 py-3.5 text-sm font-semibold transition-colors duration-300 hover:text-white"
+              className="w-full rounded-full border-2 px-10 py-3.5 text-sm font-semibold transition-colors duration-300 hover:!bg-[#083858] hover:!text-white active:!bg-[#083858] active:!text-white sm:w-auto"
               style={{ borderColor: BLUE, color: BLUE }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = BLUE;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
             >
               View more packages
             </button>

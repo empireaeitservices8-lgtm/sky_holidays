@@ -31,6 +31,13 @@ export default function Navbar() {
     const pathname = usePathname();
     const isLight = LIGHT_PAGES.includes(pathname);
 
+    // Close mobile menu whenever pathname changes (React state adjustment during render)
+    const [prevPath, setPrevPath] = useState(pathname);
+    if (prevPath !== pathname) {
+        setPrevPath(pathname);
+        setMenuOpen(false);
+    }
+
     // Colour tokens for the current page
     const text = isLight ? "text-black" : "text-white";
     const textSoft = isLight ? "text-black/70" : "text-white/75";
@@ -41,29 +48,33 @@ export default function Navbar() {
         : "border-white/40 text-white hover:bg-white hover:text-black";
 
     return (
-        <header className="absolute inset-x-0 top-0 z-40">
-            <nav className="mx-auto flex items-center justify-between px-6 py-2 md:px-12 md:py-3">
+        <header className="absolute inset-x-0 top-0 z-40 w-full">
+            <nav
+                aria-label="Main Navigation"
+                className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 sm:py-2.5 md:px-10 md:py-3 lg:px-12"
+            >
                 {/* Logo (white logo is turned black with brightness-0 on light pages) */}
-                <Link href="/" aria-label={BRAND}>
+                <Link href="/" aria-label={BRAND} className="flex items-center">
                     <Image
                         src={LOGO_SRC}
                         alt={BRAND}
                         width={520}
                         height={240}
                         priority
-                        className={`h-24 w-auto transition md:h-28 lg:h-32 ${isLight ? "brightness-0" : ""}`}
+                        className={`h-12 w-auto max-w-[170px] object-contain transition sm:h-16 sm:max-w-none md:h-20 lg:h-24 ${isLight ? "brightness-0" : ""}`}
                     />
                 </Link>
 
                 {/* Desktop links */}
-                <ul className="hidden items-center gap-9 md:flex">
+                <ul className="hidden items-center gap-5 md:flex lg:gap-8 xl:gap-9">
                     {NAV_LINKS.map((link) => {
-                      const active = pathname === link.href;
+                        const active = pathname === link.href;
                         return (
                             <li key={link.label}>
                                 <Link
                                     href={link.href}
-                                    className={`relative pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${textHover} ${active ? text : textSoft}`}
+                                    aria-current={active ? "page" : undefined}
+                                    className={`relative pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors lg:tracking-[0.18em] ${textHover} ${active ? text : textSoft}`}
                                 >
                                     {link.label}
                                     {active && (
@@ -79,7 +90,7 @@ export default function Navbar() {
                 </ul>
 
                 {/* Right side buttons */}
-                <div className="flex items-center gap-3 md:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
                     <button
                         aria-label="Search"
                         className={`rounded-full p-2 transition ${iconBtn}`}
@@ -99,14 +110,16 @@ export default function Navbar() {
                             <path d="M4 21a8 8 0 0 1 16 0" />
                         </Icon>
                     </Link>
-                    <a
+                    <Link
                         href="/DestinationPage"
-                        className={`hidden rounded-full border px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] transition sm:inline-block ${exploreBtn}`}
+                        className={`hidden rounded-full border px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] transition sm:inline-block md:px-5 md:tracking-[0.2em] ${exploreBtn}`}
                     >
                         Explore
-                    </a>
+                    </Link>
                     <button
                         aria-label={menuOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={menuOpen}
+                        aria-controls="mobile-nav"
                         onClick={() => setMenuOpen((v) => !v)}
                         className={`rounded-full p-2 transition md:hidden ${iconBtn}`}
                     >
@@ -130,19 +143,60 @@ export default function Navbar() {
 
             {/* Mobile menu (dark glass panel, readable on any page) */}
             {menuOpen && (
-                <ul className="mx-6 rounded-2xl bg-black/70 p-4 backdrop-blur-md md:hidden">
-                    {NAV_LINKS.map((link) => (
-                        <li key={link.label}>
-                            <Link
-                                href={link.href}
-                                onClick={() => setMenuOpen(false)}
-                                className="block px-3 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/90"
-                            >
-                                {link.label}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <div
+                    id="mobile-nav"
+                    className="mx-4 mt-1 rounded-2xl border border-white/15 bg-neutral-950/90 p-5 shadow-2xl backdrop-blur-xl sm:mx-6 md:hidden"
+                >
+                    <ul className="space-y-1">
+                        {NAV_LINKS.map((link) => {
+                            const active = pathname === link.href;
+                            return (
+                                <li key={link.label}>
+                                    <Link
+                                        href={link.href}
+                                        aria-current={active ? "page" : undefined}
+                                        onClick={() => setMenuOpen(false)}
+                                        className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+                                            active
+                                                ? "bg-white/15 text-white"
+                                                : "text-white/80 hover:bg-white/10 hover:text-white"
+                                        }`}
+                                    >
+                                        <span>{link.label}</span>
+                                        {active && (
+                                            <span
+                                                className="h-1.5 w-1.5 rounded-full"
+                                                style={{ background: ACCENT }}
+                                            />
+                                        )}
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+
+                    {/* Mobile menu bottom action buttons */}
+                    <div className="mt-4 flex flex-col gap-2.5 border-t border-white/15 pt-4">
+                        <Link
+                            href="/DestinationPage"
+                            onClick={() => setMenuOpen(false)}
+                            className="flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-black shadow-md transition hover:bg-white/90"
+                        >
+                            Explore Destinations
+                        </Link>
+                        <Link
+                            href="/login-register"
+                            onClick={() => setMenuOpen(false)}
+                            className="flex items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
+                        >
+                            <Icon className="h-3.5 w-3.5">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M4 21a8 8 0 0 1 16 0" />
+                            </Icon>
+                            <span>Login / Register</span>
+                        </Link>
+                    </div>
+                </div>
             )}
         </header>
     );

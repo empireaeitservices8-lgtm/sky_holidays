@@ -369,7 +369,7 @@ export default function HeroSection() {
       {/* <Navbar /> */}
 
       {/* ---------- Main content ---------- */}
-      <div className="absolute inset-0 z-30 flex flex-col justify-end gap-6 px-6 pb-8 pt-28 md:px-12 lg:flex-row lg:items-end lg:gap-10 lg:pb-14">
+      <div className="absolute inset-0 z-30 flex flex-col justify-end gap-6 px-4 pb-6 pt-24 sm:px-6 sm:pb-8 sm:pt-28 md:px-10 md:pb-10 lg:flex-row lg:items-end lg:gap-10 lg:pb-14 lg:px-12">
         {/* Left: destination info */}
         <div className="lg:w-[40%] lg:pb-14">
           <div
@@ -384,7 +384,7 @@ export default function HeroSection() {
           </p>
 
           <h1
-            className={`${bebas.className} text-6xl uppercase leading-[0.95] tracking-wide sm:text-7xl lg:text-8xl`}
+            className={`${bebas.className} text-5xl uppercase leading-[0.95] tracking-wide sm:text-7xl lg:text-8xl`}
           >
             {current.titleLines.map((line, i) => (
               <span key={i} className="block overflow-hidden pt-[0.06em]">

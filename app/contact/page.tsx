@@ -141,14 +141,14 @@ export default function ContactSection() {
       </div>
 
       {/* ------------------------------ Hero ------------------------------ */}
-      <section className="px-4 pb-14 pt-40 text-center md:pb-20 md:pt-48">
+      <section className="px-4 pb-12 pt-28 text-center sm:pt-36 md:pb-20 md:pt-44">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE }}
           className="mx-auto max-w-2xl"
         >
-          <h1 className={`${heading.className} text-5xl font-medium leading-tight [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-7xl`}>
+          <h1 className={`${heading.className} text-4xl font-medium leading-tight [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-6xl md:text-7xl`}>
             Contact Us
           </h1>
           <nav aria-label="Breadcrumb" className="mt-4 flex items-center justify-center gap-2 text-sm text-white/80">
@@ -175,7 +175,7 @@ export default function ContactSection() {
             />
           </div>
 
-          <div className="mt-4 grid gap-4 md:absolute md:inset-x-6 md:bottom-6 md:mt-0 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:absolute lg:inset-x-6 lg:bottom-6 lg:mt-0 lg:grid-cols-3">
             <InfoCard icon={MapPin} title="Office Address" text={ADDRESS} />
             <InfoCard icon={Mail} title="Message Us" text={EMAIL} href={`mailto:${EMAIL}`} />
             <InfoCard icon={Phone} title="Call Us" text={PHONE} href={`tel:${PHONE.replace(/\s/g, "")}`} />
