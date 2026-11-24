@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,7 +10,7 @@ import Icon from "./Icon";
 /* -------------------------------------------------------------------------- */
 
 const BRAND = "Globe Express"; // used as the logo's alt text
-const LOGO_SRC = "/images/logo/whitetext.png"; // white-text logo (turned black automatically on light pages)
+const LOGO_SRC = "/images/logo/whitetext.png"; // white-text logo (turned black automatically on light backgrounds)
 const NAV_LINKS = [
     { label: "Home", href: "/" },
     { label: "Destinations", href: "/DestinationPage" },
@@ -20,35 +20,145 @@ const NAV_LINKS = [
 ] as const;
 const ACCENT = "#f5a623";
 
-// Pages that have a WHITE / LIGHT background -> navbar text and logo turn black there.
-// All other pages (dark or photo backgrounds) keep white text.
-// Example: const LIGHT_PAGES = ["/contact", "/about"];
-const LIGHT_PAGES: string[] = [];
+type Theme = "dark" | "light"; // "dark" = dark background behind the navbar -> white text
+
+/**
+ * HOW THE COLOUR WORKS
+ * While you scroll, the navbar checks what is behind it:
+ *   - photo / dark colour behind it  -> white text and logo
+ *   - white / light colour behind it -> black text and logo
+ * To force a colour for one section, add  data-nav-theme="light"  or  data-nav-theme="dark"  to it.
+ */
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [theme, setTheme] = useState<Theme>("dark");
+    const [scrolled, setScrolled] = useState(false);
+    const [hidden, setHidden] = useState(false);
+    const headerRef = useRef<HTMLElement>(null);
     const pathname = usePathname();
-    const isLight = LIGHT_PAGES.includes(pathname);
 
     // Close mobile menu whenever pathname changes
     useEffect(() => {
         setMenuOpen(false);
     }, [pathname]);
 
-    // Colour tokens for the current page
+    // Auto colour + hide on scroll down / show on scroll up
+    useEffect(() => {
+        // 1x1 canvas converts any CSS colour (rgb, oklch, ...) into plain RGBA numbers
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 1;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+        const toRGBA = (color: string) => {
+            if (!ctx) return null;
+            ctx.clearRect(0, 0, 1, 1);
+            ctx.fillStyle = "#000";
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 1, 1);
+            const d = ctx.getImageData(0, 0, 1, 1).data;
+            return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+        };
+
+        const detect = () => {
+            const header = headerRef.current;
+            if (!header) return;
+            const y = Math.min(header.offsetHeight / 2, 80);
+            const els = document.elementsFromPoint(window.innerWidth / 2, y);
+            let result: Theme = "dark";
+
+            for (const el of els) {
+                if (header.contains(el)) continue;
+
+                const flagged = el.closest("[data-nav-theme]") as HTMLElement | null;
+                if (flagged) {
+                    result = flagged.dataset.navTheme === "light" ? "light" : "dark";
+                    break;
+                }
+
+                const tag = el.tagName;
+                if (tag === "IMG" || tag === "VIDEO" || tag === "CANVAS" || tag === "IFRAME") {
+                    result = "dark";
+                    break;
+                }
+
+                const cs = getComputedStyle(el);
+                if (cs.backgroundImage.includes("url(")) {
+                    result = "dark";
+                    break;
+                }
+
+                const c = toRGBA(cs.backgroundColor);
+                if (c && c.a > 0.6) {
+                    const luminance = (0.299 * c.r + 0.587 * c.g + 0.114 * c.b) / 255;
+                    result = luminance > 0.6 ? "light" : "dark";
+                    break;
+                }
+            }
+            setTheme(result);
+        };
+
+        let lastY = window.scrollY;
+        let ticking = false;
+
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const y = window.scrollY;
+                setScrolled(y > 10);
+                if (y > lastY && y > 200) {
+                    setHidden(true); // scrolling down: hide
+                    setMenuOpen(false);
+                } else if (y < lastY) {
+                    setHidden(false); // scrolling up: show
+                }
+                lastY = y;
+                detect();
+                ticking = false;
+            });
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", detect);
+        detect();
+        const t1 = setTimeout(detect, 300); // again after images / fonts load
+        const t2 = setTimeout(detect, 1200);
+
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", detect);
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
+    }, [pathname]);
+
+    const isLight = theme === "light";
+
+    // Colour tokens for the current background
     const text = isLight ? "text-black" : "text-white";
     const textSoft = isLight ? "text-black/70" : "text-white/75";
     const textHover = isLight ? "hover:text-black" : "hover:text-white";
     const iconBtn = isLight ? "text-black/90 hover:bg-black/10" : "text-white/90 hover:bg-white/10";
+    const bar = scrolled
+        ? isLight
+            ? "bg-white/70 shadow-sm backdrop-blur-md"
+            : "bg-black/30 backdrop-blur-md"
+        : "";
 
     return (
-        <header className="absolute inset-x-0 top-0 z-40 w-full">
+        <header
+            ref={headerRef}
+            className={`fixed inset-x-0 top-0 z-40 w-full transition-transform duration-300 ${
+                hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
+            }`}
+        >
             <nav
                 aria-label="Main Navigation"
-                className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 sm:py-2.5 md:px-10 md:py-3 lg:px-12"
+                className={`mx-auto flex max-w-7xl items-center justify-between px-4 py-2 transition-colors duration-300 sm:px-6 sm:py-2.5 md:px-10 md:py-3 lg:px-12 ${bar}`}
             >
-                {/* Logo: same height on mobile and laptop (white logo is turned black with brightness-0 on light pages).
-                    min-w-0 / shrink / max-w-full let it scale down only if the screen is too narrow to fit the icons. */}
+                {/* Logo: big at the top of the page, smaller once you scroll so the bar stays slim.
+                    (white logo is turned black with brightness-0 on light backgrounds) */}
                 <Link href="/" aria-label={BRAND} className="flex min-w-0 shrink items-center">
                     <Image
                         src={LOGO_SRC}
@@ -56,7 +166,9 @@ export default function Navbar() {
                         width={520}
                         height={240}
                         priority
-                        className={`h-40 w-auto max-w-full object-contain transition ${isLight ? "brightness-0" : ""}`}
+                        className={`w-auto max-w-full object-contain transition-all duration-300 ${
+                            scrolled ? "h-20 sm:h-24" : "h-40"
+                        } ${isLight ? "brightness-0" : ""}`}
                     />
                 </Link>
 
@@ -86,31 +198,6 @@ export default function Navbar() {
 
                 {/* Right side buttons (shrink-0 so the icons are never squeezed by the logo) */}
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3 md:gap-4">
-                    {/* <button
-                        aria-label="Search"
-                        className={`rounded-full p-2 transition ${iconBtn}`}
-                    >
-                        <Icon className="h-4 w-4">
-                            <circle cx="11" cy="11" r="7" />
-                            <path d="m20 20-3.5-3.5" />
-                        </Icon>
-                    </button> */}
-                    {/* <Link
-                        href="/login-register"
-                        aria-label="Login"
-                        className={`hidden rounded-full p-2 transition sm:block ${iconBtn}`}
-                    >
-                        <Icon className="h-4 w-4">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M4 21a8 8 0 0 1 16 0" />
-                        </Icon>
-                    </Link> */}
-                    {/* <Link
-                        href="/DestinationPage"
-                        className={`hidden rounded-full border px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] transition sm:inline-block md:px-5 md:tracking-[0.2em] ${exploreBtn}`}
-                    >
-                        Explore
-                    </Link> */}
                     <button
                         aria-label={menuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={menuOpen}
@@ -136,7 +223,7 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile menu (dark glass panel, readable on any page) */}
+            {/* Mobile menu (dark glass panel, readable on any background) */}
             {menuOpen && (
                 <div
                     id="mobile-nav"
@@ -169,28 +256,6 @@ export default function Navbar() {
                             );
                         })}
                     </ul>
-
-                    {/* Mobile menu bottom action buttons */}
-                    <div className="mt-4 flex flex-col gap-2.5 border-t border-white/15 pt-4">
-                        {/* <Link
-                            href="/DestinationPage"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-black shadow-md transition hover:bg-white/90"
-                        >
-                            Explore Destinations
-                        </Link>
-                        <Link
-                            href="/login-register"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
-                        >
-                            <Icon className="h-3.5 w-3.5">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21a8 8 0 0 1 16 0" />
-                            </Icon>
-                            <span>Login / Register</span>
-                        </Link> */}
-                    </div>
                 </div>
             )}
         </header>
