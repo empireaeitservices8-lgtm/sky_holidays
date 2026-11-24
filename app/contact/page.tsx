@@ -31,7 +31,7 @@ const BRAND = "Your Travel Brand";
 const PHONE = "+91 00000 00000";
 const EMAIL = "hello@yourdomain.com";
 const ADDRESS = "Your office address, Business Bay, Dubai, UAE";
-const MAP_QUERY = "Business Bay, Dubai, United Arab Emirates";// what the map should show
+const MAP_QUERY = "Business Bay, Dubai, United Arab Emirates"; // what the map should show
 const HOURS = "Mon – Sat, 9:30 AM – 6:30 PM";
 
 // Full-page background photo (stays fixed while the content scrolls).
@@ -141,6 +141,7 @@ export default function ContactSection() {
       </div>
 
       {/* ------------------------------ Hero ------------------------------ */}
+      {/* Extra top padding so the heading clears the (taller) navbar logo */}
       <section className="px-4 pb-12 pt-44 text-center sm:pt-48 md:pb-20 md:pt-56">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -196,16 +197,46 @@ export default function ContactSection() {
           >
             <h2 className={`${heading.className} text-3xl`}>Send Us a Message</h2>
 
+            {/* suppressHydrationWarning on the fields: browser extensions (autofill, download
+                managers) add attributes like fdprocessedid before React loads, which triggers
+                a harmless hydration warning. */}
             <form onSubmit={handleSubmit} className="mt-7 space-y-5">
               {/* Honeypot: real users never see or fill this */}
-              <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden
+                className="hidden"
+                suppressHydrationWarning
+              />
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field label="Your Name *" htmlFor="name">
-                  <input id="name" name="name" type="text" required minLength={2} autoComplete="name" placeholder="Enter your name" className={fieldClass} />
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    minLength={2}
+                    autoComplete="name"
+                    placeholder="Enter your name"
+                    className={fieldClass}
+                    suppressHydrationWarning
+                  />
                 </Field>
                 <Field label="Email *" htmlFor="email">
-                  <input id="email" name="email" type="email" required autoComplete="email" placeholder="Your email address" className={fieldClass} />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="Your email address"
+                    className={fieldClass}
+                    suppressHydrationWarning
+                  />
                 </Field>
               </div>
 
@@ -217,6 +248,7 @@ export default function ContactSection() {
                     required
                     defaultValue=""
                     className={`${fieldClass} appearance-none pr-10 [&>option]:text-black`}
+                    suppressHydrationWarning
                   >
                     <option value="" disabled>Choose a subject</option>
                     {SUBJECTS.map((s) => (
@@ -236,6 +268,7 @@ export default function ContactSection() {
                   rows={5}
                   placeholder="Tell us about your trip: where, when and how many travelers"
                   className={`${fieldClass} resize-none`}
+                  suppressHydrationWarning
                 />
               </Field>
 
@@ -244,6 +277,7 @@ export default function ContactSection() {
                 disabled={status === "sending"}
                 className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:opacity-60"
                 style={{ background: ACCENT }}
+                suppressHydrationWarning
               >
                 {status === "sending" ? "Sending…" : "Send Message"}
                 <Send className="h-4 w-4" />
