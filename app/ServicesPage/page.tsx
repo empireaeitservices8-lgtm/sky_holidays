@@ -473,20 +473,20 @@ export default function ServicesPage({ heroImage }: { heroImage?: string }) {
           aria-label="Services"
           className="pt-8 sm:pt-12"
         >
-          {/* Scrolls sideways on mobile, wraps and centres from md up */}
-          <ul className="mx-auto flex max-w-[1180px] gap-2.5 overflow-x-auto overscroll-x-contain px-4 pb-2 sm:px-6 md:flex-wrap md:justify-center md:gap-3 md:overflow-visible md:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {/* 2-column grid on mobile (no swiping), centred wrapping row from sm up */}
+          <ul className="mx-auto grid max-w-[1180px] grid-cols-2 gap-2.5 px-4 sm:flex sm:flex-wrap sm:justify-center sm:gap-3 sm:px-6 md:px-8">
             {SERVICES.map((s) => {
               const Icon = s.icon;
 
               return (
-                <li key={s.id} className="shrink-0">
+                <li key={s.id}>
                   <a
                     href={`#${s.id}`}
-                    className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border bg-white px-4 py-2.5 text-[13px] font-medium shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#083858] sm:px-5 sm:text-sm"
+                    className="flex h-full items-center gap-2 rounded-2xl border bg-white px-3.5 py-2.5 text-[13px] font-medium leading-tight shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#083858] sm:inline-flex sm:rounded-full sm:px-5 sm:text-sm"
                     style={{ borderColor: `${INK}1f` }}
                   >
                     <Icon
-                      className="h-4 w-4"
+                      className="h-4 w-4 shrink-0"
                       style={{ color: BLUE }}
                     />
 
