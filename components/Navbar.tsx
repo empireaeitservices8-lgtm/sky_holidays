@@ -58,7 +58,7 @@ export default function Navbar() {
                 {/* Desktop links */}
                 <ul className="hidden items-center gap-9 md:flex">
                     {NAV_LINKS.map((link) => {
-                        const active = link.href !== "#" && pathname === link.href;
+                      const active = pathname === link.href;
                         return (
                             <li key={link.label}>
                                 <Link
