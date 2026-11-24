@@ -30,8 +30,8 @@ const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], display:
 const BRAND = "Your Travel Brand";
 const PHONE = "+91 00000 00000";
 const EMAIL = "hello@yourdomain.com";
-const ADDRESS = "Your office address, City, State, PIN";
-const MAP_QUERY = "Kakkanad, Kochi, Kerala"; // what the map should show
+const ADDRESS = "Your office address, Business Bay, Dubai, UAE";
+const MAP_QUERY = "Business Bay, Dubai, United Arab Emirates";// what the map should show
 const HOURS = "Mon – Sat, 9:30 AM – 6:30 PM";
 
 // Full-page background photo (stays fixed while the content scrolls).

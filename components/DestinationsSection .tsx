@@ -338,10 +338,11 @@ export default function DestinationsSection() {
         <div
           role="group"
           aria-label="Region"
-          className="-mx-4 mt-6 overflow-x-auto overscroll-x-contain px-4 sm:-mx-6 sm:mt-8 sm:px-6 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-6 sm:mt-8"
         >
+          {/* Wraps onto several rows on mobile, one rounded row from md up */}
           <div
-            className="inline-flex rounded-full p-1"
+            className="inline-flex max-w-full flex-wrap gap-1 rounded-3xl p-1 md:flex-nowrap md:rounded-full"
             style={{ background: BLUE_TINT }}
           >
             {REGIONS.map((r) => {
@@ -378,7 +379,7 @@ export default function DestinationsSection() {
         <div
           role="group"
           aria-label="Travel style"
-          className="-mx-4 mt-6 flex gap-5 overflow-x-auto overscroll-x-contain border-b border-neutral-200 px-4 sm:-mx-6 sm:mt-8 sm:gap-7 sm:px-6 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-6 flex flex-wrap gap-2 sm:mt-8 md:gap-7 md:border-b md:border-neutral-200"
         >
           {(["all", ...THEMES] as const).map((t) => {
             const isOn = theme === t;
@@ -388,15 +389,18 @@ export default function DestinationsSection() {
                 type="button"
                 aria-pressed={isOn}
                 onClick={() => chooseTheme(t)}
-                className="relative shrink-0 whitespace-nowrap pb-3 pt-1 text-[13px] font-medium transition-colors duration-300 sm:text-sm"
-                style={{ color: isOn ? BLUE : "#8a949c" }}
+                className={`relative rounded-full border px-4 py-2 text-[13px] font-medium transition-colors duration-300 sm:text-sm md:rounded-none md:border-0 md:bg-transparent md:px-0 md:pb-3 md:pt-1 ${
+                  isOn
+                    ? "border-[#083858] bg-[#083858] text-white md:text-[#083858]"
+                    : "border-neutral-300 text-neutral-500 md:text-[#8a949c]"
+                }`}
               >
                 {t === "all" ? "All styles" : t}
                 {isOn && (
                   <motion.span
                     layoutId="theme-underline"
                     transition={{ duration: 0.45, ease: EASE }}
-                    className="absolute inset-x-0 bottom-0 h-0.5"
+                    className="absolute inset-x-0 bottom-0 hidden h-0.5 md:block"
                     style={{ background: BLUE }}
                   />
                 )}
@@ -456,8 +460,9 @@ export default function DestinationsSection() {
                   {p.themes.slice(0, 2).map((t, idx) => (
                     <span
                       key={t}
-                      className={`rounded-full bg-white/20 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md ${idx === 1 ? "hidden min-[400px]:inline-block" : ""
-                        }`}
+                      className={`rounded-full bg-white/20 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md ${
+                        idx === 1 ? "hidden min-[400px]:inline-block" : ""
+                      }`}
                     >
                       {t}
                     </span>

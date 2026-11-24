@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,21 +30,16 @@ export default function Navbar() {
     const pathname = usePathname();
     const isLight = LIGHT_PAGES.includes(pathname);
 
-    // Close mobile menu whenever pathname changes (React state adjustment during render)
-    const [prevPath, setPrevPath] = useState(pathname);
-    if (prevPath !== pathname) {
-        setPrevPath(pathname);
+    // Close mobile menu whenever pathname changes
+    useEffect(() => {
         setMenuOpen(false);
-    }
+    }, [pathname]);
 
     // Colour tokens for the current page
     const text = isLight ? "text-black" : "text-white";
     const textSoft = isLight ? "text-black/70" : "text-white/75";
     const textHover = isLight ? "hover:text-black" : "hover:text-white";
     const iconBtn = isLight ? "text-black/90 hover:bg-black/10" : "text-white/90 hover:bg-white/10";
-    const exploreBtn = isLight
-        ? "border-black/40 text-black hover:bg-black hover:text-white"
-        : "border-white/40 text-white hover:bg-white hover:text-black";
 
     return (
         <header className="absolute inset-x-0 top-0 z-40 w-full">
@@ -53,15 +47,16 @@ export default function Navbar() {
                 aria-label="Main Navigation"
                 className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 sm:py-2.5 md:px-10 md:py-3 lg:px-12"
             >
-                {/* Logo (white logo is turned black with brightness-0 on light pages) */}
-                <Link href="/" aria-label={BRAND} className="flex items-center">
+                {/* Logo: same height on mobile and laptop (white logo is turned black with brightness-0 on light pages).
+                    min-w-0 / shrink / max-w-full let it scale down only if the screen is too narrow to fit the icons. */}
+                <Link href="/" aria-label={BRAND} className="flex min-w-0 shrink items-center">
                     <Image
                         src={LOGO_SRC}
                         alt={BRAND}
                         width={520}
                         height={240}
                         priority
-                        className={`h-12 w-auto max-w-[170px] object-contain transition sm:h-16 sm:max-w-none md:h-20 lg:h-24 ${isLight ? "brightness-0" : ""}`}
+                        className={`h-40 w-auto max-w-full object-contain transition ${isLight ? "brightness-0" : ""}`}
                     />
                 </Link>
 
@@ -89,9 +84,9 @@ export default function Navbar() {
                     })}
                 </ul>
 
-                {/* Right side buttons */}
-                <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-                    <button
+                {/* Right side buttons (shrink-0 so the icons are never squeezed by the logo) */}
+                <div className="flex shrink-0 items-center gap-2 sm:gap-3 md:gap-4">
+                    {/* <button
                         aria-label="Search"
                         className={`rounded-full p-2 transition ${iconBtn}`}
                     >
@@ -99,8 +94,8 @@ export default function Navbar() {
                             <circle cx="11" cy="11" r="7" />
                             <path d="m20 20-3.5-3.5" />
                         </Icon>
-                    </button>
-                    <Link
+                    </button> */}
+                    {/* <Link
                         href="/login-register"
                         aria-label="Login"
                         className={`hidden rounded-full p-2 transition sm:block ${iconBtn}`}
@@ -109,13 +104,13 @@ export default function Navbar() {
                             <circle cx="12" cy="8" r="4" />
                             <path d="M4 21a8 8 0 0 1 16 0" />
                         </Icon>
-                    </Link>
-                    <Link
+                    </Link> */}
+                    {/* <Link
                         href="/DestinationPage"
                         className={`hidden rounded-full border px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] transition sm:inline-block md:px-5 md:tracking-[0.2em] ${exploreBtn}`}
                     >
                         Explore
-                    </Link>
+                    </Link> */}
                     <button
                         aria-label={menuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={menuOpen}
@@ -177,7 +172,7 @@ export default function Navbar() {
 
                     {/* Mobile menu bottom action buttons */}
                     <div className="mt-4 flex flex-col gap-2.5 border-t border-white/15 pt-4">
-                        <Link
+                        {/* <Link
                             href="/DestinationPage"
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-black shadow-md transition hover:bg-white/90"
@@ -194,7 +189,7 @@ export default function Navbar() {
                                 <path d="M4 21a8 8 0 0 1 16 0" />
                             </Icon>
                             <span>Login / Register</span>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             )}

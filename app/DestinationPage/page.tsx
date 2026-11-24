@@ -69,28 +69,14 @@ const Svg = ({ size = 20, className, fill, children }: IconProps & { children: R
     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">{children}</svg>
 );
 const PinIcon = (p: IconProps) => <Svg {...p}><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></Svg>;
-const CalIcon = (p: IconProps) => <Svg {...p}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></Svg>;
-const UserIcon = (p: IconProps) => <Svg {...p}><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></Svg>;
 const SearchIcon = (p: IconProps) => <Svg {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>;
 const HeartIcon = (p: IconProps) => <Svg {...p}><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" /></Svg>;
-const MinusIcon = (p: IconProps) => <Svg {...p}><path d="M5 12h14" /></Svg>;
-const PlusIcon = (p: IconProps) => <Svg {...p}><path d="M12 5v14M5 12h14" /></Svg>;
 
-/* ---------------- Search panel ---------------- */
-interface SearchParams { destination: string; checkIn: string; checkOut: string; travelers: number }
+/* ---------------- Search panel (destination only) ---------------- */
+interface SearchParams { destination: string }
 
 function SearchPanel({ query, setQuery, onSearch }: { query: string; setQuery: (v: string) => void; onSearch: (p: SearchParams) => void }) {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [travelers, setTravelers] = useState(2);
   const [open, setOpen] = useState(false);
-  const [today, setToday] = useState("");
-
-  useEffect(() => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    setToday(now.toISOString().split("T")[0]);
-  }, []);
 
   const suggestions = destinations.filter((d) => `${d.name} ${d.country}`.toLowerCase().includes(query.toLowerCase()));
   const label = "block text-[10px] font-semibold uppercase tracking-widest text-white/80";
@@ -98,8 +84,8 @@ function SearchPanel({ query, setQuery, onSearch }: { query: string; setQuery: (
 
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); onSearch({ destination: query, checkIn, checkOut, travelers }); }}
-      className="mx-auto w-full max-w-4xl rounded-3xl border border-white/50 bg-black/40 p-2 text-white shadow-[0_10px_40px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-xl md:rounded-full"
+      onSubmit={(e) => { e.preventDefault(); onSearch({ destination: query }); }}
+      className="mx-auto w-full max-w-2xl rounded-3xl border border-white/50 bg-black/40 p-2 text-white shadow-[0_10px_40px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-xl md:rounded-full"
     >
       <div className="flex flex-col divide-y divide-white/25 md:flex-row md:items-center md:divide-x md:divide-y-0">
         <div className="relative flex-1 text-left">
@@ -123,33 +109,6 @@ function SearchPanel({ query, setQuery, onSearch }: { query: string; setQuery: (
               ))}
             </ul>
           )}
-        </div>
-
-        <label className={`${field} text-left`}>
-          <CalIcon size={22} className="shrink-0" />
-          <span className="w-full">
-            <span className={label}>Dates</span>
-            <span className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
-              <input type="date" min={today} value={checkIn} aria-label="Check-in"
-                onChange={(e) => { setCheckIn(e.target.value); if (checkOut && e.target.value > checkOut) setCheckOut(""); }}
-                className="w-full min-w-[6.5rem] max-w-[8rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
-              <span className="text-white/60">–</span>
-              <input type="date" min={checkIn || today} value={checkOut} aria-label="Check-out" onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full min-w-[6.5rem] max-w-[8rem] bg-transparent text-sm outline-none [color-scheme:dark]" />
-            </span>
-          </span>
-        </label>
-
-        <div className={`${field} text-left`}>
-          <UserIcon size={22} className="shrink-0" />
-          <span className="w-full">
-            <span className={label}>Travelers</span>
-            <span className="flex items-center gap-3 whitespace-nowrap">
-              <button type="button" aria-label="Fewer travelers" onClick={() => setTravelers((t) => Math.max(1, t - 1))} className="rounded-full border border-white/50 p-1 transition hover:bg-white/20"><MinusIcon size={14} /></button>
-              <span className="text-base font-medium">{travelers} {travelers === 1 ? "Traveler" : "Travelers"}</span>
-              <button type="button" aria-label="More travelers" onClick={() => setTravelers((t) => Math.min(12, t + 1))} className="rounded-full border border-white/50 p-1 transition hover:bg-white/20"><PlusIcon size={14} /></button>
-            </span>
-          </span>
         </div>
 
         <div className="p-2 md:pl-3 md:pr-1">
@@ -248,7 +207,7 @@ export default function DestinationPage() {
       `}</style>
 
       {/* Hero content (scrolls up over the fixed background) */}
-      <div className="mx-auto flex min-h-[85vh] w-full max-w-7xl flex-col justify-center px-4 pb-10 pt-28 text-center sm:px-6 sm:pt-36">
+      <div className="relative z-20 mx-auto flex min-h-[85vh] w-full max-w-7xl flex-col justify-center px-4 pb-10 pt-28 text-center sm:px-6 sm:pt-36">
         <h1 className={`${heading.className} text-3xl font-medium leading-tight tracking-tight [animation:riseIn_0.9s_ease-out_both] [text-shadow:0_4px_30px_rgba(0,0,0,0.7)] sm:text-5xl md:text-6xl lg:text-7xl`}>
           Where Will You Go Next?
         </h1>
@@ -266,13 +225,13 @@ export default function DestinationPage() {
             Explore Destinations
           </button>
         </div>
-        <div className="mt-8 [animation:riseIn_0.9s_0.45s_ease-out_both]">
+        <div className="relative z-30 mt-8 [animation:riseIn_0.9s_0.45s_ease-out_both]">
           <SearchPanel query={query} setQuery={setQuery} onSearch={handleSearch} />
         </div>
       </div>
 
       {/* Cards: glass panel so they stay visible on any photo */}
-      <div id="destination-discovery" className="mx-auto w-full max-w-[1400px] scroll-mt-24 px-4 pb-12 sm:px-8">
+      <div id="destination-discovery" className="relative z-10 mx-auto w-full max-w-[1400px] scroll-mt-24 px-4 pb-12 sm:px-8">
         <div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-5 lg:gap-6">
             {destinations.map((d) => (
